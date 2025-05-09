@@ -14,9 +14,9 @@ on:
           - false
 
 env:
-  REPO_URL: https://github.com/VIKINGYFY/immortalwrt.git
+  REPO_URL: https://github.com/coolsnowwolf/lede.git
   CONFIG_FILE: 'config/AW1000.config' 
-  REPO_BRANCH: main
+  REPO_BRANCH: master
   UPLOAD_BIN_DIR: true
   UPLOAD_FIRMWARE: true
   UPLOAD_RELEASE: true
@@ -55,6 +55,9 @@ jobs:
         cd openwrt
         cat <<EOF >> feeds.conf.default
         src-git modem https://github.com/FUjr/QModem.git;main
+        src-git istore https://github.com/linkease/istore;main
+        src-git nas https://github.com/linkease/nas-packages.git;master
+        src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
         EOF
 
     - name: Link build directories to external mount to save space
