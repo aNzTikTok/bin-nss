@@ -60,6 +60,11 @@ jobs:
         src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
         EOF
 
+    - name: Download Extra Plugin
+      run: |
+        cd openwrt/package
+        git clone https://github.com/QMODEM/quectel-CM-5G.git
+        
     - name: Link build directories to external mount to save space
       run: |
         sudo mkdir -p -m 777 /mnt/openwrt/{dl,staging_dir,build_dir}
