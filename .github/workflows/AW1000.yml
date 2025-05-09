@@ -12,7 +12,7 @@ on:
         options:
           - true
           - false
-  
+
 env:
   REPO_URL: https://github.com/VIKINGYFY/immortalwrt.git
   CONFIG_FILE: 'config/AW1000.config' 
