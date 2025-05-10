@@ -1,0 +1,62 @@
+name: Check qca-nss-clients Build Error
+
+on: 
+  workflow_dispatch:
+
+env:
+  REPO_URL: https://github.com/coolsnowwolf/lede.git
+  REPO_BRANCH: master
+  TZ: Asia/Kuala_Lumpur
+
+jobs:
+  debug-nss-client:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Free disk space
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
+        android: true
+        dotnet: true
+
+    - name: Setup build environment
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y $(curl -fsSL https://raw.githubusercontent.com/aNzTikTok/bin-nss/main/depend_ubuntu2204_openwrt)
+        sudo timedatectl set-timezone "$TZ"
+
+    - name: Clone OpenWrt source
+      run: |
+        git clone --depth=1 $REPO_URL -b $REPO_BRANCH openwrt
+        cd openwrt
+        cat <<EOF >> feeds.conf.default
+        src-git modem https://github.com/FUjr/QModem.git;main
+        src-git istore https://github.com/linkease/istore;main
+        src-git nas https://github.com/linkease/nas-packages.git;master
+        src-git nas_luci https://github.com/linkease/nas-packages-luci.git;main
+        EOF
+
+    - name: Download Extra Plugin
+      run: |
+        cd openwrt/package
+        git clone https://github.com/QMODEM/quectel-CM-5G.git
+
+    - name: Update & install feeds
+      working-directory: ./openwrt
+      run: |
+        ./scripts/feeds update -a
+        ./scripts/feeds install -a
+
+    - name: Make defconfig
+      working-directory: ./openwrt
+      run: make defconfig
+
+    - name: Compile qca-nss-clients with verbose output
+      working-directory: ./openwrt
+      run: |
+        make package/qca/qca-nss-clients/clean
+        make package/qca/qca-nss-clients/compile -j1 V=sc
