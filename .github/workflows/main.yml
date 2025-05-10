@@ -1,12 +1,13 @@
 name: Check qca-nss-clients Build Error
 
-on: 
+on:
   workflow_dispatch:
 
 env:
   REPO_URL: https://github.com/coolsnowwolf/lede.git
   REPO_BRANCH: master
   TZ: Asia/Kuala_Lumpur
+  CONFIG_FILE: config/AW1000.config
 
 jobs:
   debug-nss-client:
@@ -44,6 +45,10 @@ jobs:
       run: |
         cd openwrt/package
         git clone https://github.com/QMODEM/quectel-CM-5G.git
+
+    - name: Add .config file
+      run: |
+        cp $CONFIG_FILE ./openwrt/.config
 
     - name: Update & install feeds
       working-directory: ./openwrt
